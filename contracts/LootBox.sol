@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract LootBox is ERC1155Supply, Ownable {
     using ECDSA for bytes32;
@@ -57,28 +58,6 @@ contract LootBox is ERC1155Supply, Ownable {
 
         bytes32 structHash = keccak256(
             abi.encode(MINT, tokenId, amount, redeemer)
-        );
-
-        bytes32 digest = ECDSA.toTypedDataHash(DOMAIN_SEPARATOR, structHash);
-
-        address recoveredAddress = ECDSA.recover(digest, signature);
-        return recoveredAddress;
-    }
-
-    function _validateBurn(
-        uint256 tokenId,
-        uint256 amount,
-        address bullAddress,
-        uint256 bullAmount,
-        address redeemer,
-        bytes memory signature
-    ) public view returns (address) {
-        bytes32 MINT = keccak256(
-            "ERC1155Burn(uint256 tokenId,uint256 amount, address bullAddress,uint256 bullAmount,address redemeer)"
-        );
-
-        bytes32 structHash = keccak256(
-            abi.encode(MINT, tokenId, amount, bullAddress, bullAmount, redeemer)
         );
 
         bytes32 digest = ECDSA.toTypedDataHash(DOMAIN_SEPARATOR, structHash);
@@ -141,6 +120,28 @@ contract LootBox is ERC1155Supply, Ownable {
         claimedAssets[msg.sender][collectionId] = amount;
     }
 
+    function _validateBurn(
+        uint256 tokenId,
+        uint256 amount,
+        address bullAddress,
+        uint256 bullAmount,
+        address burner,
+        bytes memory signature
+    ) public view returns (address) {
+        bytes32 BURN = keccak256(
+            "ERC1155Burn(uint256 tokenId,uint256 amount,address bullAddress,uint256 bullAmount,address burner)"
+        );
+
+        bytes32 structHash = keccak256(
+            abi.encode(BURN, tokenId, amount, bullAddress, bullAmount, burner)
+        );
+
+        bytes32 digest = ECDSA.toTypedDataHash(DOMAIN_SEPARATOR, structHash);
+
+        address recoveredAddress = ECDSA.recover(digest, signature);
+        return recoveredAddress;
+    }
+
     function burn(
         uint256 collectionId,
         uint256 amount,
@@ -157,6 +158,11 @@ contract LootBox is ERC1155Supply, Ownable {
             signature
         );
         require(signer == owner(), "Invalid Signer");
+        IERC20(tokenAddress).transferFrom(
+            msg.sender,
+            address(this),
+            bullAmount
+        );
         _burn(msg.sender, collectionId, amount);
         emit BurnedAsset(msg.sender, collectionId, amount);
     }
