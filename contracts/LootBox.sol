@@ -20,6 +20,8 @@ contract LootBox is ERC1155Supply, Ownable {
     // mapping (address) to collectionId to amount
     mapping(address => mapping(uint256 => uint256)) public claimedAssets;
 
+    event BurnedAsset(address burner, uint256 tokenId, uint256 amount);
+
     bytes32 private EIP712_DOMAIN_TYPE_HASH =
         keccak256(
             "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
@@ -55,6 +57,28 @@ contract LootBox is ERC1155Supply, Ownable {
 
         bytes32 structHash = keccak256(
             abi.encode(MINT, tokenId, amount, redeemer)
+        );
+
+        bytes32 digest = ECDSA.toTypedDataHash(DOMAIN_SEPARATOR, structHash);
+
+        address recoveredAddress = ECDSA.recover(digest, signature);
+        return recoveredAddress;
+    }
+
+    function _validateBurn(
+        uint256 tokenId,
+        uint256 amount,
+        address bullAddress,
+        uint256 bullAmount,
+        address redeemer,
+        bytes memory signature
+    ) public view returns (address) {
+        bytes32 MINT = keccak256(
+            "ERC1155Burn(uint256 tokenId,uint256 amount, address bullAddress,uint256 bullAmount,address redemeer)"
+        );
+
+        bytes32 structHash = keccak256(
+            abi.encode(MINT, tokenId, amount, bullAddress, bullAmount, redeemer)
         );
 
         bytes32 digest = ECDSA.toTypedDataHash(DOMAIN_SEPARATOR, structHash);
@@ -112,6 +136,28 @@ contract LootBox is ERC1155Supply, Ownable {
         require(signer == owner(), "Invalid Signer");
         uint256 claimAbleAmount = amount -
             claimedAssets[msg.sender][collectionId];
+        require(claimAbleAmount != 0, "ERC1155: cannot mint 0 Item");
         _mint(msg.sender, collectionId, claimAbleAmount, "");
+        claimedAssets[msg.sender][collectionId] = amount;
+    }
+
+    function burn(
+        uint256 collectionId,
+        uint256 amount,
+        uint256 bullAmount,
+        address tokenAddress,
+        bytes memory signature
+    ) external payable {
+        address signer = _validateBurn(
+            collectionId,
+            amount,
+            tokenAddress,
+            bullAmount,
+            msg.sender,
+            signature
+        );
+        require(signer == owner(), "Invalid Signer");
+        _burn(msg.sender, collectionId, amount);
+        emit BurnedAsset(msg.sender, collectionId, amount);
     }
 }
