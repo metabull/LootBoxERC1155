@@ -1,18 +1,12 @@
 const hre = require("hardhat");
 
 async function main() {
-  const BullieverseAssets = await hre.ethers.getContractFactory(
-    "BullieverseAssets"
-  );
-  const deployedBullieverseAssets = await BullieverseAssets.deploy("test"
-  );
+  const LootBox = await hre.ethers.getContractFactory("LootBox");
+  const deployedLootBox = await LootBox.deploy("test");
 
-  await deployedBullieverseAssets.deployed();
+  await deployedLootBox.deployed();
 
-  console.log(
-    "Deployed BullieverseAssets Address:",
-    deployedBullieverseAssets.address
-  );
+  console.log("Deployed LootBox Address:", deployedLootBox.address);
 }
 
 main()

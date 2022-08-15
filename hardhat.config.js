@@ -7,11 +7,12 @@ require("@nomiclabs/hardhat-etherscan");
 module.exports = {
   defaultNetwork: "rinkeby",
   networks: {
-    hardhat: {
-    },
+    hardhat: {},
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/7cd4731a3be74a6ab7c32fe799ab3177",
-      accounts: ["157fe16dc4a333838397b2adb5bfc1263dacbb9d0fcda48bf9cb362c90824c29"],
+      accounts: [
+        "b44ea02a1fe90d587091aec6288dced2ba12f621b10079ac781feb3ab3271336",
+      ],
       chainId: 4,
       live: true,
       saveDeployments: true,
@@ -21,7 +22,9 @@ module.exports = {
     },
     mainnet: {
       url: `https://mainnet.infura.io/v3/7cd4731a3be74a6ab7c32fe799ab3177`,
-      accounts: ["1f8701c77fa5038ff7b0297d81ba331cc1039788624235f7f3ec75d08c41e5e2"],
+      accounts: [
+        "1f8701c77fa5038ff7b0297d81ba331cc1039788624235f7f3ec75d08c41e5e2",
+      ],
       gasPrice: 120 * 1000000000,
       // chainId: 1,
     },
@@ -31,20 +34,20 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
-      }
-    }
+        runs: 200,
+      },
+    },
   },
   paths: {
     sources: "./contracts",
     // tests: "./test",s
     cache: "./cache",
-    artifacts: "./artifacts"
+    artifacts: "./artifacts",
   },
   etherscan: {
     apiKey: "EDIZBUAS4TG4RRM7VC4VVSIU19ESG6CCHP",
   },
   mocha: {
-    timeout: 20000
-  }
+    timeout: 20000,
+  },
 };
