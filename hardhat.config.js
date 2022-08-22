@@ -28,6 +28,22 @@ module.exports = {
       gasPrice: 120 * 1000000000,
       // chainId: 1,
     },
+    polygontestnet: {
+      url: `https://polygon-mumbai.infura.io/v3/e0737333518f412892d21b1762e8fe47`,
+      accounts: [
+        "e7b53631bc2023891dd5d53ea5a79f0829396670840f884dcd3fe87c8d15683d",
+      ],
+      //gasPrice: 120 * 1000000000,
+      // chainId: 1,
+    },
+    polygon: {
+      url: `https://polygon-mainnet.infura.io/v3/e0737333518f412892d21b1762e8fe47`,
+      accounts: [
+        "e7b53631bc2023891dd5d53ea5a79f0829396670840f884dcd3fe87c8d15683d",
+      ],
+      gasPrice: 120 * 1000000000,
+      // chainId: 1,
+    },
   },
   solidity: {
     version: "0.8.0",
@@ -45,7 +61,8 @@ module.exports = {
     artifacts: "./artifacts",
   },
   etherscan: {
-    apiKey: "EDIZBUAS4TG4RRM7VC4VVSIU19ESG6CCHP",
+    apiKey: "BPN7F7YIVAEVCHN3WI1SFZ73EKAR8FQ49Z",
+    //  apiKey: "6F2QV99DME1GBEHFT668GJ64M948SMT75N",
   },
   mocha: {
     timeout: 20000,
